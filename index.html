@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      /* .container {
+        display: grid;
+        grid-template-columns: repeat(16, minmax(0, 1fr));
+        gap: 4rem;
+        padding-left: 4rem;
+        padding-right: 4rem;
+        margin-top: 6rem;
+      }
+      .box {
+        width: 4rem;
+        height: 4rem;
+        background-color: #f4e5d1;
+      }
+      .box:hover {
+        background-color: #b0aca7;
+      } */
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        min-width: "-webkit-fill-available";
+        min-height: 360px;
+        background-color: GhostWhite;
+      }
+
+      h1 {
+        height: 40px;
+        line-height: 40px;
+        margin: 0;
+        padding: 0 10px;
+        text-align: center;
+        color: black;
+        font-size: 24px;
+        font-family: "Roboto", Calibri, sans-serif;
+      }
+
+      .grid {
+        margin-bottom: 10px;
+        margin-right: 130px;
+        padding: 5px;
+        max-height: calc(100vh - 70px);
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .row {
+        display: flex;
+        width: calc(100vh - 70px - 20px);
+        min-width: 300px;
+        float: none;
+        border-left: 0.5px solid gray;
+        border-right: 0.5px solid gray;
+      }
+
+      .row:first-of-type {
+        border-top: 0.5px solid gray;
+      }
+
+      .row:last-of-type {
+        border-bottom: 0.5px solid gray;
+      }
+
+      .square {
+        aspect-ratio: 1/1;
+        flex: auto;
+        border: 0.5px solid lightgray;
+      }
+
+      header {
+        margin: 0 auto 10px auto;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin-top: 20px;
+        gap: 5px;
+        width: calc(100vh - 70px - 20px);
+        min-width: 300px;
+      }
+
+      button {
+        max-height: 35px;
+        min-height: 22px;
+        background-color: rgb(192, 192, 192);
+        border-radius: 0.4rem;
+        color: white;
+      }
+
+      header button {
+        width: 60px;
+      }
+
+      .controls button {
+        width: 95px;
+      }
+
+      .buttonToggle {
+        background-color: #3882f6;
+        font-weight: bold;
+      }
+
+      .container {
+        display: flex;
+        justify-content: center;
+      }
+
+      .controls {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        width: 100px;
+        margin: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <button type="button" id="reset">Reset</button>
+      <h1>Etch a Sketch</h1>
+      <button type="button" id="new-grid">New Grid</button>
+    </header>
+
+    <div class="container">
+      <div class="controls">
+        <button type="button" id="randomColor">randomColor</button>
+        <button type="button" id="darkMode">darkMode</button>
+      </div>
+      <div class="grid"></div>
+    </div>
+
+    <script>
+      let containerBox = document.querySelector(".grid");
+
+      let redValue;
+      let greenValue;
+      let blueValue;
+
+      for (i = 0; i < 16; i++) {
+        let rowDiv = document.createElement("div");
+        rowDiv.classList.add("row");
+
+        for (j = 0; j < 16; j++) {
+          let newDiv = document.createElement("div");
+          newDiv.classList.add("square");
+          newDiv.setAttribute("data-background-opacity", 0);
+          rowDiv.appendChild(newDiv);
+        }
+
+        containerBox.appendChild(rowDiv);
+      }
+
+      containerBox.addEventListener("mouseover", (event) => {
+        if (event.target.classList.contains("square")) {
+          if (colorButton.classList.contains("buttonToggle")) {
+            redValue = Math.floor(Math.random() * 256);
+            greenValue = Math.floor(Math.random() * 256);
+            blueValue = Math.floor(Math.random() * 256);
+          } else {
+            redValue = 69;
+            greenValue = 69;
+            blueValue = 69;
+          }
+
+          if (!darkModeButton.classList.contains("buttonToggle")) {
+            event.target.setAttribute(
+              "data-background-opacity",
+              Number(event.target.getAttribute("data-background-opacity")) + 0.1
+            );
+          } else {
+            event.target.setAttribute("data-background-opacity", 1);
+          }
+
+          console.log(event.target.getAttribute("data-background-opacity"));
+
+          event.target.style.backgroundColor = `rgba(${redValue}, ${greenValue}, ${blueValue}, ${event.target.getAttribute(
+            "data-background-opacity"
+          )}`;
+        }
+      });
+
+      let resetButton = document.querySelector("#reset");
+
+      resetButton.addEventListener("click", () => {
+        resetButton.classList.add("buttonToggle");
+        setTimeout(() => resetButton.classList.remove("buttonToggle"), 200);
+
+        for (const row of containerBox.children) {
+          for (const square of row.children) {
+            square.style.backgroundColor = "HoneyDew";
+          }
+        }
+      });
+
+      let newGridButton = document.querySelector("#new-grid");
+
+      function getNumber() {
+        let num = prompt(
+          "Enter the number of squares per side (between 1 and 100):"
+        );
+
+        let isCorrect = /^([1-9][0-9]?|100)$/;
+
+        while (Number(num) > 100 || Number(num) <= 0) {
+          num = prompt(
+            "Enter the number of squares per side (between 1 and 100):"
+          );
+        }
+
+        return num;
+      }
+
+      function createNewGrid(num) {
+        containerBox.innerHTML = "";
+
+        for (i = 0; i < num; i++) {
+          let rowDiv = document.createElement("div");
+          rowDiv.classList.add("row");
+
+          for (j = 0; j < num; j++) {
+            let newDiv = document.createElement("div");
+            newDiv.classList.add("square");
+            rowDiv.appendChild(newDiv);
+          }
+
+          containerBox.appendChild(rowDiv);
+        }
+      }
+
+      newGridButton.addEventListener("click", () => {
+        newGridButton.classList.add("buttonToggle");
+        setTimeout(() => newGridButton.classList.remove("buttonToggle"), 200);
+
+        createNewGrid(getNumber());
+      });
+
+      let colorButton = document.querySelector("#randomColor");
+
+      colorButton.addEventListener("click", () => {
+        colorButton.classList.toggle("buttonToggle");
+      });
+
+      let darkModeButton = document.querySelector("#darkMode");
+
+      darkModeButton.addEventListener("click", () => {
+        darkModeButton.classList.toggle("buttonToggle");
+      });
+    </script>
+  </body>
+</html>
